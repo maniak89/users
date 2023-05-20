@@ -10,6 +10,10 @@ import (
 func LoginPost(impl *serviceImpl.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 		redirectTo, err := impl.Login(ctx,
 			r.Form.Get("login"), r.Form.Get("password"), r.Form.Get("login_challenge"))
 		if err != nil {
