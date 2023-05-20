@@ -7,6 +7,7 @@ import (
 	_ "crypto/sha1"
 	_ "crypto/sha256"
 	_ "crypto/sha512"
+	"encoding/hex"
 	"errors"
 	"strings"
 
@@ -14,6 +15,7 @@ import (
 )
 
 var supportedHashes = map[string]crypto.Hash{
+	"NONE":                 0,
 	crypto.MD5.String():    crypto.MD5,
 	crypto.SHA1.String():   crypto.SHA1,
 	crypto.SHA256.String(): crypto.SHA256,
@@ -41,11 +43,14 @@ func New(config Config) (*security, error) {
 }
 
 func (s *security) Hash(ctx context.Context, password string) (string, error) {
+	if s.hash == 0 {
+		return password, nil
+	}
 	logger := zerolog.Ctx(ctx)
 	instance := s.hash.New()
 	if _, err := instance.Write([]byte(password + s.config.Salt)); err != nil {
 		logger.Error().Err(err).Msg("Failed write password for hash")
 		return "", err
 	}
-	return string(instance.Sum(nil)), nil
+	return hex.EncodeToString(instance.Sum(nil)), nil
 }
