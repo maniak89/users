@@ -64,6 +64,14 @@ func main() {
 	}
 	oauth2 := hydra.New(cfg.OAuth2)
 	storage := sql.New(cfg.Storage)
+	if err := storage.Connect(ctx); err != nil {
+		logger.Panic().Err(err).Msg("Failed connect to db")
+	}
+	defer func() {
+		if err := storage.Disconnect(ctx); err != nil {
+			logger.Error().Err(err).Msg("Failed disconnect from db")
+		}
+	}()
 	serviceImpl := &serviceImpl.Service{
 		Storage: storage,
 		OAuth2:  oauth2,
