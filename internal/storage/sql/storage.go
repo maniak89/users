@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"net/url"
-	"time"
 
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
@@ -101,7 +100,6 @@ func (s *storage) Find(ctx context.Context, login string) (*storageModels.User, 
 
 func (s *storage) UpdateLastLogin(ctx context.Context, login string) error {
 	logger := log.Ctx(ctx)
-	now := time.Now()
 	if _, err := s.db.WithContext(ctx).Exec("update users set last_login=now() where login = "+s.db.Placeholder(1), login); err != nil {
 		logger.Error().Err(err).Msg("Failed update user")
 		return err
