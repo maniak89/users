@@ -5,5 +5,5 @@ import (
 )
 
 type OAuth2 interface {
-	MakeChallenge(ctx context.Context, challenge string) (string, error)
+	MakeChallenge(ctx context.Context, subject, challenge string) (string, error)
 }

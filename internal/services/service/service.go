@@ -40,7 +40,7 @@ func (s *Service) Login(ctx context.Context, login, password, challenge string) 
 		logger.Debug().Msg("password mismatch")
 		return "", ErrNoUser
 	}
-	redirectTo, err := s.OAuth2.MakeChallenge(ctx, challenge)
+	redirectTo, err := s.OAuth2.MakeChallenge(ctx, user.ID, challenge)
 	if err != nil {
 		logger.Error().Err(err).Msg("Failed make challenge request")
 		return "", err
