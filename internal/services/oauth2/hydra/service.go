@@ -25,13 +25,25 @@ func New(config Config) (*service, error) {
 	}, nil
 }
 
-func (s *service) MakeChallenge(ctx context.Context, subject, challenge string) (string, error) {
+func (s *service) MakeLogin(ctx context.Context, subject, challenge string) (string, error) {
 	logger := log.Ctx(ctx)
 	request := s.client.OAuth2Api.AcceptOAuth2LoginRequest(ctx)
 
 	redirectTo, _, err := request.LoginChallenge(challenge).AcceptOAuth2LoginRequest(hydra.AcceptOAuth2LoginRequest{
 		Subject: subject,
 	}).Execute()
+	if err != nil {
+		logger.Error().Err(err).Msg("Failed make challenge request")
+		return "", err
+	}
+	return redirectTo.RedirectTo, nil
+}
+
+func (s *service) MakeConsent(ctx context.Context, challenge string) (string, error) {
+	logger := log.Ctx(ctx)
+	request := s.client.OAuth2Api.AcceptOAuth2ConsentRequest(ctx)
+
+	redirectTo, _, err := request.ConsentChallenge(challenge).AcceptOAuth2ConsentRequest(hydra.AcceptOAuth2ConsentRequest{}).Execute()
 	if err != nil {
 		logger.Error().Err(err).Msg("Failed make challenge request")
 		return "", err

@@ -45,6 +45,7 @@ func New(ctx context.Context, config Config, log zerolog.Logger, serviceImpl *se
 		r.Get("/", handlers.LoginGet)
 		r.Post("/", handlers.LoginPost(serviceImpl))
 	})
+	r.Get("/consent", handlers.ConsentGet(serviceImpl))
 
 	return &service, nil
 }

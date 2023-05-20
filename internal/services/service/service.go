@@ -40,13 +40,24 @@ func (s *Service) Login(ctx context.Context, login, password, challenge string) 
 		logger.Debug().Msg("password mismatch")
 		return "", ErrNoUser
 	}
-	redirectTo, err := s.OAuth2.MakeChallenge(ctx, user.ID, challenge)
+	redirectTo, err := s.OAuth2.MakeLogin(ctx, user.ID, challenge)
 	if err != nil {
-		logger.Error().Err(err).Msg("Failed make challenge request")
+		logger.Error().Err(err).Msg("Failed make login request")
 		return "", err
 	}
 	if err := s.Storage.UpdateLastLogin(ctx, login); err != nil {
 		logger.Warn().Err(err).Msg("Failed update last login")
+	}
+	return redirectTo, nil
+}
+
+func (s *Service) Consent(ctx context.Context, challenge string) (string, error) {
+	logger := log.Ctx(ctx).With().Str("challenge", challenge).Logger()
+	ctx = logger.WithContext(ctx)
+	redirectTo, err := s.OAuth2.MakeConsent(ctx, challenge)
+	if err != nil {
+		logger.Error().Err(err).Msg("Failed make challenge request")
+		return "", err
 	}
 	return redirectTo, nil
 }

@@ -25,7 +25,7 @@ func Test_service_MakeChallenge(t *testing.T) {
 		HydraAdminUrl: server.URL,
 	})
 	assert.NoError(t, err)
-	redirectAddr, err := impl.MakeChallenge(context.Background(), "", "challenge")
+	redirectAddr, err := impl.MakeLogin(context.Background(), "", "challenge")
 	assert.NoError(t, err)
 	assert.Equal(t, redirectTo, redirectAddr)
 	server.Close()
