@@ -101,8 +101,9 @@ func (s *storage) Find(ctx context.Context, login string) (*storageModels.User, 
 
 func (s *storage) UpdateLastLogin(ctx context.Context, login string) error {
 	logger := log.Ctx(ctx)
+	now := time.Now()
 	if _, err := s.db.WithContext(ctx).UpdateView(&storageModels.User{
-		LastLogin: time.Now(),
+		LastLogin: &now,
 	}, []string{"last_login"}, "WHERE login = "+s.db.Placeholder(1), login); err != nil {
 		logger.Error().Err(err).Msg("Failed update user")
 		return err

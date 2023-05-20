@@ -53,7 +53,7 @@ var UserView = &userViewType{
 			{Name: "Password", Type: "string", Column: "password"},
 			{Name: "CreatedAt", Type: "time.Time", Column: "created_at"},
 			{Name: "UpdatedAt", Type: "time.Time", Column: "updated_at"},
-			{Name: "LastLogin", Type: "time.Time", Column: "last_login"},
+			{Name: "LastLogin", Type: "*time.Time", Column: "last_login"},
 		},
 		PKFieldIndex: -1,
 	},
