@@ -62,7 +62,10 @@ func main() {
 	if err != nil {
 		zerolog.Fatal().Err(err).Msg("Cannot init crypto")
 	}
-	oauth2 := hydra.New(cfg.OAuth2)
+	oauth2, err := hydra.New(cfg.OAuth2)
+	if err != nil {
+		logger.Panic().Err(err).Msg("Failed init oauth")
+	}
 	storage := sql.New(cfg.Storage)
 	if err := storage.Connect(ctx); err != nil {
 		logger.Panic().Err(err).Msg("Failed connect to db")
