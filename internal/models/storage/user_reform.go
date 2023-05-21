@@ -10,23 +10,23 @@ import (
 	"gopkg.in/reform.v1/parse"
 )
 
-type userViewType struct {
+type userTableType struct {
 	s parse.StructInfo
 	z []interface{}
 }
 
 // Schema returns a schema name in SQL database ("").
-func (v *userViewType) Schema() string {
+func (v *userTableType) Schema() string {
 	return v.s.SQLSchema
 }
 
 // Name returns a view or table name in SQL database ("users").
-func (v *userViewType) Name() string {
+func (v *userTableType) Name() string {
 	return v.s.SQLName
 }
 
 // Columns returns a new slice of column names for that view or table in SQL database.
-func (v *userViewType) Columns() []string {
+func (v *userTableType) Columns() []string {
 	return []string{
 		"id",
 		"login",
@@ -38,12 +38,22 @@ func (v *userViewType) Columns() []string {
 }
 
 // NewStruct makes a new struct for that view or table.
-func (v *userViewType) NewStruct() reform.Struct {
+func (v *userTableType) NewStruct() reform.Struct {
 	return new(User)
 }
 
-// UserView represents users view or table in SQL database.
-var UserView = &userViewType{
+// NewRecord makes a new record for that table.
+func (v *userTableType) NewRecord() reform.Record {
+	return new(User)
+}
+
+// PKColumnIndex returns an index of primary key column for that table in SQL database.
+func (v *userTableType) PKColumnIndex() uint {
+	return uint(v.s.PKFieldIndex)
+}
+
+// UserTable represents users view or table in SQL database.
+var UserTable = &userTableType{
 	s: parse.StructInfo{
 		Type:    "User",
 		SQLName: "users",
@@ -55,7 +65,7 @@ var UserView = &userViewType{
 			{Name: "UpdatedAt", Type: "time.Time", Column: "updated_at"},
 			{Name: "LastLogin", Type: "*time.Time", Column: "last_login"},
 		},
-		PKFieldIndex: -1,
+		PKFieldIndex: 0,
 	},
 	z: new(User).Values(),
 }
@@ -100,16 +110,47 @@ func (s *User) Pointers() []interface{} {
 
 // View returns View object for that struct.
 func (s *User) View() reform.View {
-	return UserView
+	return UserTable
+}
+
+// Table returns Table object for that record.
+func (s *User) Table() reform.Table {
+	return UserTable
+}
+
+// PKValue returns a value of primary key for that record.
+// Returned interface{} value is never untyped nil.
+func (s *User) PKValue() interface{} {
+	return s.ID
+}
+
+// PKPointer returns a pointer to primary key field for that record.
+// Returned interface{} value is never untyped nil.
+func (s *User) PKPointer() interface{} {
+	return &s.ID
+}
+
+// HasPK returns true if record has non-zero primary key set, false otherwise.
+func (s *User) HasPK() bool {
+	return s.ID != UserTable.z[UserTable.s.PKFieldIndex]
+}
+
+// SetPK sets record primary key, if possible.
+//
+// Deprecated: prefer direct field assignment where possible: s.ID = pk.
+func (s *User) SetPK(pk interface{}) {
+	reform.SetPK(s, pk)
 }
 
 // check interfaces
 var (
-	_ reform.View   = UserView
+	_ reform.View   = UserTable
 	_ reform.Struct = (*User)(nil)
+	_ reform.Table  = UserTable
+	_ reform.Record = (*User)(nil)
 	_ fmt.Stringer  = (*User)(nil)
 )
 
 func init() {
-	parse.AssertUpToDate(&UserView.s, new(User))
+	parse.AssertUpToDate(&UserTable.s, new(User))
 }

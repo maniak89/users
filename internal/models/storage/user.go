@@ -7,7 +7,7 @@ import (
 
 //reform:users
 type User struct {
-	ID        string     `reform:"id"`
+	ID        string     `reform:"id,pk"`
 	Login     string     `reform:"login"`
 	Password  string     `reform:"password"`
 	CreatedAt time.Time  `reform:"created_at"`
